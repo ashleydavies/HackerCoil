@@ -11,13 +11,13 @@ main = do
   pass <- getLine
   let req = "http://www.hacker.org/coil/index.php?name="
           ++ name ++ "&password=" ++ pass
-  egg <- ((simpleHTTP (getRequest req)) >>= getResponseBody)
-  putStrLn egg
+  response <- ((simpleHTTP (getRequest req)) >>= getResponseBody)
+  putStrLn $ getFlashVars response
 
 getFlashVars :: String -> String
 getFlashVars = (flip (!!)) 1 .
-                  splitOn "'" .
+                  splitOn "\"" .
                   head .
                   filter (isPrefixOf "FlashVars") .
-                  map (dropWhile (\x -> x == ' ')) .
+                  map (dropWhile (\x -> x == ' ' || x == '\t')) .
                   lines
