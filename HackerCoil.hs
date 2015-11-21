@@ -5,6 +5,7 @@ import Data.List
 type GameBoardTile = Bool
 type GameBoard     = [[GameBoardTile]]
 type GameData      = (Int, Int, GameBoard)
+type BoardPosition = (Int, Int)
 
 main :: IO ()
 main = do
@@ -37,7 +38,9 @@ parseGameBoard :: String -> Int -> GameBoard
 parseGameBoard board width
   = chunksOf width (map (\x -> x == 'X') board)
 
-{-
-splitEvery :: [a] -> Int -> [[a]]
-splitEvery [] n = []
-splitEvery li n = take n li ++ splitEvery (drop n li) n -}
+
+getCandidateStartingPoints :: GameBoard -> [BoardPosition]
+getCandidateStartingPoints board
+  = [(x, y) | (xs, y) <- zippedList, (x, val) <- xs, val == True]
+  where
+    zippedList = zip (map (zip [1..]) board) [1..]
