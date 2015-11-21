@@ -6,6 +6,7 @@ type GameBoardTile = Bool
 type GameBoard     = [[GameBoardTile]]
 type GameData      = (Int, Int, GameBoard)
 type BoardPosition = (Int, Int)
+data Direction     = U | D | L | R
 
 main :: IO ()
 main = do
@@ -43,4 +44,37 @@ getCandidateStartingPoints :: GameBoard -> [BoardPosition]
 getCandidateStartingPoints board
   = [(x, y) | (xs, y) <- zippedList, (x, val) <- xs, val == True]
   where
-    zippedList = zip (map (zip [1..]) board) [1..]
+    zippedList = zip (map (zip [0..]) board) [0..]
+
+
+getBoardTile :: GameBoard -> BoardPosition -> GameBoardTile
+getBoardTile board (x, y) = board !! y !! x
+
+
+validPosition :: GameBoard -> BoardPosition -> Bool
+validPosition board pos@(x, y)
+  | x < 0                       = False
+  | y < 0                       = False
+  | y + 1 > length board        = False
+  | x + 1 > length (board !! 0) = False
+  | getBoardTile board pos      = False
+  | otherwise                   = True
+
+
+doStep :: GameBoard -> BoardPosition -> Direction -> GameBoard
+doStep board (x, y) dir
+  | validMove = board 
+  | otherwise = board
+  where
+    validMove   = validPosition board newPosition
+    newPosition = case dir of U -> (x, y - 1); D -> (x, y + 1)
+                              L -> (x - 1, y); R -> (x + 1, y)
+
+
+doLeftStep :: GameBoard -> BoardPosition -> GameBoard
+doLeftStep board (x, y)
+  | y == 0    = board
+  | otherwise = board
+  where
+    moveValid = True
+
